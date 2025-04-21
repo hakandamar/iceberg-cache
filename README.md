@@ -1,60 +1,99 @@
-# IceCache: Distributed Smart Caching Layer for Apache Iceberg
-IceCache is an open-source, distributed caching layer designed for Apache Iceberg data lakes. It integrates tightly with Apache Spark and is aware of Iceberg's snapshot-based architecture to enable high-performance and intelligent cache invalidation.
+# IceCache
 
-📦 Core Modules
+**IceCache** is an open-source, distributed smart caching layer for Apache Iceberg, built to accelerate data retrieval in large-scale data lake environments.
 
-1. Snapshot Tracker
+---
 
-* Monitors Iceberg table metadata.
-* Detects snapshot changes using snapshot ID, manifest list and metadata files.
-* Emits change events for downstream modules.
+## 🚀 Overview
+Apache Iceberg is designed for reliable and large-scale data lake storage. However, its snapshot-based architecture and metadata layout can lead to performance bottlenecks, especially with high-frequency data updates and large numbers of small files.
 
-2. Smart Invalidator
+IceCache solves this by integrating deeply with Apache Spark to provide:
+- Snapshot-aware smart caching
+- Intelligent cache invalidation
+- Distributed caching backend support
+- Significant reduction in metadata and query planning latency
 
-* Uses snapshot diffs to determine which partitions or data files have changed.
-* Invalidates only the affected cache entries.
-* Supports file-level and partition-level granularity.
+---
 
-3. Spark Integration Layer
+## 🎯 Key Features
+- ✅ **Snapshot-Aware Caching:** Automatically tracks Iceberg table snapshots and invalidates outdated cache entries.
+- ⚡ **Accelerated Metadata Access:** Caches frequently accessed metadata and manifest information.
+- 🧠 **Smart Invalidation:** Only invalidates changed partitions/files using Iceberg snapshot diff.
+- 🔁 **Spark Integrated API:** Drop-in replacement for `.cache()` with Iceberg-specific optimizations.
+- 🧱 **Pluggable Cache Backends:** Redis support out-of-the-box. RocksDB and others coming soon.
+- 📊 **Observability:** Built-in metrics exporter for Prometheus/Grafana.
 
-Offers a user-friendly API for PySpark and Scala:
-```python
-from icecache import IceCache
-df = spark.read.format("iceberg").load("my_table")
-IceCache.cache(df, "my_table")
+---
+
+## 💡 Why IceCache?
+
+Apache Iceberg performance can degrade due to:
+- Large number of manifest files
+- Small file explosion
+- Frequent updates generating many snapshots
+
+IceCache introduces an intelligent layer that reduces metadata access time and accelerates query execution by minimizing redundant file scans and planning overhead.
+
+---
+
+## 📦 Architecture Modules
+- `snapshot-tracker` – Monitors Iceberg metadata and triggers cache events
+- `smart-invalidator` – Performs selective invalidation
+- `spark-integration` – Provides PySpark/Scala API
+- `cache-backend` – Manages cache logic (initially Redis-based)
+- `metrics-server` – Exposes cache stats for observability
+
+---
+
+## 🛠️ MVP Scope
+- Redis backend with file-level caching
+- Snapshot polling tracker
+- PySpark-friendly API
+- Smart invalidation logic
+- CLI to inspect cache state
+
+---
+
+## 🧪 Planned Enhancements
+- Listener-based live snapshot tracking
+- Time-travel aware versioned caching
+- Adaptive TTL and cost-based eviction
+- Integration with Trino and Flink
+
+---
+
+## 📥 Installation & Usage
+_**(Coming soon)**_
+
+```bash
+pip install icecache
 ```
 
-Internally hooks into Spark’s logical plan and leverages caching APIs with smart layer.
+```python
+from icecache import IceCache
 
-4. Cache Backend Abstraction
+# Read data
+df = spark.read.format("iceberg").load("catalog.db.table")
 
-* Pluggable backend architecture.
-* Initial support: Redis.
-* Future support: RocksDB, Apache Ignite, in-memory tiered caching.
+# Cache using IceCache
+IceCache.cache(df, "catalog.db.table")
+```
 
-5. Metrics & Monitoring
+---
 
-* Collects cache metrics (hit/miss rate, eviction stats, etc.).
-* Exposes Prometheus-compatible endpoint.
-* Optional integration with Grafana dashboards.
+## 📜 License
+Apache License 2.0
 
-🚀 MVP Scope
+---
 
-* Redis backend with basic file-level caching.
-* Iceberg snapshot monitoring (polling-based).
-* PySpark integration with smart cache API.
-* Invalidation mechanism for appended or deleted data files.
-* Basic CLI tool to inspect cache entries.
+## 🤝 Contributing
+We welcome contributions from the community! Feel free to open issues, suggest features, or submit PRs.
 
-🛠️ Future Enhancements
+- Join discussions in GitHub Projects & Discussions tab
+- Help us test across compute engines
+- Share feedback and optimization ideas
 
-* Listener-based snapshot tracking via Iceberg APIs.
-* Adaptive TTL based on access frequency.
-* Cost-based cache eviction strategy.
-* Query plan caching for sub-second response times.
-* Time-travel aware multi-version caching.
-* Integration with Flink and Trino.
+---
 
--------------------------------------------------------------------------------------------
+Let’s make Apache Iceberg faster and smarter together. 🔥
 
-Let's build IceCache to make Iceberg blazing fast and smart! 🚀
